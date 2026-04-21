@@ -47,6 +47,8 @@ export default function TakeTurnPage() {
   const [departments, setDepartments] = useState([]);
   const [loadingDepts, setLoadingDepts] = useState(false);
   const [selectedDept, setSelectedDept] = useState(null);
+  
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -104,12 +106,22 @@ export default function TakeTurnPage() {
     }
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (selectedHospital && selectedDept) {
       if (actionType === 'book') {
-        router.push('/booking/schedule'); 
+        router.push(`/booking/schedule?dept=${selectedDept}`); 
       } else {
-        router.push('/tracking'); 
+        try {
+          setLoadingSubmit(true);
+          
+          await new Promise(resolve => setTimeout(resolve, 800));
+          
+          router.push('/booking/tracking'); 
+        } catch (err) {
+          console.error("Failed to join queue", err);
+        } finally {
+          setLoadingSubmit(false);
+        }
       }
     }
   };
@@ -298,7 +310,7 @@ export default function TakeTurnPage() {
                   <Container maxWidth="sm" disableGutters>
                     <Button 
                       variant="contained" 
-                      disabled={!selectedDept}
+                      disabled={!selectedDept || loadingSubmit}
                       onClick={handleConfirm}
                       sx={{ 
                         py: isVis ? 2.5 : 2, borderRadius: '24px', 
@@ -308,7 +320,11 @@ export default function TakeTurnPage() {
                         boxShadow: selectedDept ? '0 10px 25px -5px rgba(16, 185, 129, 0.4)' : 'none',
                       }}
                     >
-                      {actionType === 'book' ? 'تأكيد ومتابعة الموعد' : 'تأكيد أخذ الدور'}
+                      {loadingSubmit ? (
+                        <CircularProgress size={28} color="inherit" />
+                      ) : (
+                        actionType === 'book' ? 'تأكيد ومتابعة الموعد' : 'تأكيد أخذ الدور'
+                      )}
                     </Button>
                   </Container>
                 </Box>
