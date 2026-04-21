@@ -65,7 +65,10 @@ export const BackendConnector = {
         getHospitalDetails: (id) => fetchAPI(`/hospital/${id}`),
     getClinics: () => fetchAPI('/clinics'),
     joinQueue: (clinicId) => fetchAPI('/queue/join', { method: 'POST', body: JSON.stringify({ clinic_id: clinicId }) }),
-    
+    submitFeedback: (feedbackData) => fetchAPI('/feedback', { 
+        method: 'POST', 
+        body: JSON.stringify(feedbackData) 
+    }),
     getDepartmentSchedule: (deptId) => fetchAPI(`/department/schedule?department_id=${deptId}`),
     joinQueue: (clinicId) => fetchAPI('/queue/join', { method: 'POST', body: JSON.stringify({ clinic_id: clinicId }) }),
     getQueueStatus: () => fetchAPI('/queue/status'),
